@@ -8,15 +8,26 @@ int main()
 
     srand(time(0));
 
-    sf::RectangleShape rectangle(sf::Vector2f(199, 199));
-    sf::RectangleShape wrong_rectangle(sf::Vector2f(199, 199));
-    sf::RectangleShape correct_rectangle(sf::Vector2f(199, 199));
-    sf::CircleShape option_buttons(75);
-
+    sf::CircleShape option_buttons(60);
     option_buttons.setFillColor(sf::Color::Black);
-    correct_rectangle.setFillColor(sf::Color::Green);
-    wrong_rectangle.setFillColor(sf::Color::Red);
-    rectangle.setFillColor(sf::Color::Yellow);
+
+    sf::Texture basic;
+    basic.loadFromFile("924-Inte.77a09680\\x64\\Assets\\Tiles\\basics.png");
+    sf::Texture wrong;
+    wrong.loadFromFile("924-Inte.77a09680\\x64\\Assets\\Tiles\\failure.png");
+    sf::Texture correct;
+    correct.loadFromFile("924-Inte.77a09680\\x64\\Assets\\Tiles\\success.png");
+    sf::Texture potential;
+    potential.loadFromFile("924-Inte.77a09680\\x64\\Assets\\Tiles\\potential.png");
+
+    sf::Sprite s_basic;
+    s_basic.setTexture(basic);
+    sf::Sprite s_wrong;
+    s_wrong.setTexture(wrong);
+    sf::Sprite s_success;
+    s_success.setTexture(correct);
+    sf::Sprite s_potential;
+    s_potential.setTexture(potential);
 
     std::array<int, 2>solution = {rand() % 5, rand() % 5};
     std::array<int, 2>player_answer;
@@ -59,21 +70,21 @@ int main()
             {
                 for (int y = 0; y < 5; ++y)
                 {
-                    rectangle.setPosition((200 * x), (200 * y));
-                    window.draw(rectangle);
+                    s_basic.setPosition((200 * x), (200 * y));
+                    window.draw(s_basic);
                 }
 
             }
 
             for (int idx = 0; idx <= attempts; ++idx)
             {
-                wrong_rectangle.setPosition(((memory[idx] / 10) * 200), ((memory[idx] % 10) * 200));
-                window.draw(wrong_rectangle);
+                s_wrong.setPosition(((memory[idx] / 10) * 200), ((memory[idx] % 10) * 200));
+                window.draw(s_wrong);
             }
 
             if (answer==true)
             {
-                window.draw(correct_rectangle);
+                window.draw(s_success);
             }
 
             if (event.type == sf::Event::MouseButtonReleased)
@@ -81,10 +92,13 @@ int main()
                 if (event.mouseButton.button == sf::Mouse::Left)
                 {
                     player_answer=coordinates_translator(event.mouseButton.x, event.mouseButton.y);
-                    if(verification(solution, player_answer)==true)
+
+                    if (Double_Verification(memory, player_answer) == true) {
+                    }
+                    else if(verification(solution, player_answer)==true)
                     {
-                        correct_rectangle.setPosition((player_answer[0]*200), (player_answer[1]*200));
-                        window.draw(correct_rectangle);
+                        s_success.setPosition((player_answer[0]*200), (player_answer[1]*200));
+                        window.draw(s_success);
                         std::cout << "It's a match.\n";
                         answer = true;
                     }
@@ -99,22 +113,24 @@ int main()
         }
 
         while(attempts == 5 or answer == true){
-
-                if (attempts == 5)
+            if (answer == true) {
+                s_success.setPosition((solution[0] * 200), (solution[1] * 200));
+                window.draw(s_success);
+            }
+            if (attempts == 5)
                 {
-                    wrong_rectangle.setPosition(((memory[4] / 10) * 200), ((memory[4] % 10) * 200));
-                    window.draw(wrong_rectangle);
+                    s_wrong.setPosition(((memory[4] / 10) * 200), ((memory[4] % 10) * 200));
+                    window.draw(s_wrong);
 
-                    correct_rectangle.setFillColor(sf::Color::Magenta);
-                    correct_rectangle.setPosition((solution[0] * 200), (solution[1] * 200));
-                    window.draw(correct_rectangle);
+                    s_potential.setPosition((solution[0] * 200), (solution[1] * 200));
+                    window.draw(s_potential);
                 }
 
                 window.draw(try_again);
 
-                option_buttons.setPosition(225, 625);
+                option_buttons.setPosition(235, 635);
                 window.draw(option_buttons);
-                option_buttons.setPosition(625, 625);
+                option_buttons.setPosition(635, 635);
                 window.draw(option_buttons);
 
                 window.draw(yes);
@@ -145,3 +161,7 @@ int main()
         window.display();
     }
 }
+
+//1 - Make it so you can't click on the same spot again
+//2 - Stop the glitching when victory
+//3 - Add menu
